@@ -1,0 +1,440 @@
+@custom-variant dark (&:is(.dark *));
+
+/* Google Fonts loaded asynchronously via App.tsx to avoid render-blocking */
+/* @import url removed — was blocking FCP by 750ms+ */
+
+:root {
+  --font-size: 16px;
+  --font-heading: 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #22c55e;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #f1f5f9;
+  --accent-foreground: #0f172a;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --input-background: #ffffff;
+  --switch-background: #cbd5e1;
+  --subtle: #94a3b8;
+  --faint: #cbd5e1;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: #22c55e;
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #22c55e;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #334155;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #94a3b8;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #f1f5f9;
+  --card: #141414;
+  --card-foreground: #f1f5f9;
+  --popover: #141414;
+  --popover-foreground: #f1f5f9;
+  --primary: #22c55e;
+  --primary-foreground: #ffffff;
+  --secondary: #1e1e1e;
+  --secondary-foreground: #f1f5f9;
+  --muted: #1e1e1e;
+  --muted-foreground: #94a3b8;
+  --accent: #1e1e1e;
+  --accent-foreground: #f1f5f9;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #262626;
+  --input: #262626;
+  --input-background: #1e1e1e;
+  --switch-background: #404040;
+  --subtle: #64748b;
+  --faint: #404040;
+  --ring: #22c55e;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: #141414;
+  --sidebar-foreground: #f1f5f9;
+  --sidebar-primary: #22c55e;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1e1e1e;
+  --sidebar-accent-foreground: #f1f5f9;
+  --sidebar-border: #262626;
+  --sidebar-ring: #22c55e;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-subtle: var(--subtle);
+  --color-faint: var(--faint);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/**
+ * Base typography. This is not applied to elements which have an ancestor with a Tailwind text class.
+ */
+@layer base {
+  :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) {
+    h1 {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h2 {
+      font-size: var(--text-xl);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h3 {
+      font-size: var(--text-lg);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h4 {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    p {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
+
+    label {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    button {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    input {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
+  }
+}
+
+html {
+  font-size: var(--font-size);
+}
+
+/* Portrait rotation removed - handled by DisplayView component */
+
+/* Garantir que o sistema sempre use dimensões fixas */
+* {
+  box-sizing: border-box;
+}
+
+/* ============================
+   PERFORMANCE: CSS entry animations
+   Replace Motion/Framer for simple fade-in effects.
+   Uses transform + opacity only (compositor-friendly, no layout thrash).
+   ============================ */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Reduce animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Hide scrollbar for horizontal carousels */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+}
+
+/* Control panel mode */
+body.control-mode {
+  overflow: auto;
+  -webkit-user-select: auto;
+  -moz-user-select: auto;
+  user-select: auto;
+  touch-action: auto;
+  -webkit-touch-callout: default;
+}
+
+/* Display mode - lock everything */
+body.display-mode {
+  overflow: hidden;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Garantir fontes sempre fixas, nunca responsivas */
+html, body, * {
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Forçar tamanhos de fonte fixos em dispositivos móveis */
+@media screen and (max-width: 768px) {
+  html {
+    font-size: var(--font-size) !important;
+  }
+}
+
+/*
+ * BROADCAST-SAFE TEXT RULES
+ * NO ellipsis, NO truncation in display mode.
+ * BroadcastText component uses scaleX to squeeze text.
+ * These rules ensure layout containers work correctly.
+ */
+
+/* Ensure flex/grid children respect min-width */
+.flex > *,
+.grid > *,
+[class*="grid-"] > *,
+[class*="flex-"] > * {
+  min-width: 0;
+}
+
+/* Display mode table layout */
+body.display-mode table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+/* Control mode tables */
+body.control-mode table {
+  width: 100%;
+}
+
+body.control-mode td, body.control-mode th {
+  white-space: nowrap;
+}
+
+/* SCROLLBARS CUSTOMIZADAS PARA MELHOR EXPERIÊNCIA */
+/* WebKit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.03);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.12);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,0.2);
+}
+
+/* Dark scrollbars for dark themed areas */
+.bg-slate-900 ::-webkit-scrollbar-track,
+.bg-slate-800 ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.bg-slate-900 ::-webkit-scrollbar-thumb,
+.bg-slate-800 ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+
+.bg-slate-900 ::-webkit-scrollbar-thumb:hover,
+.bg-slate-800 ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.12) rgba(0,0,0,0.03);
+}
+
+/* Garantir scroll suave em toda a aplicação */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Melhorias específicas para áreas de scroll */
+.overflow-y-auto {
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Garantir que containers flex não interfiram no scroll */
+.flex-1 {
+  flex: 1 1 0% !important;
+  min-height: 0;
+}
+
+/* Melhorar scroll em containers flexbox */
+.overflow-hidden {
+  overflow: hidden !important;
+}
+
+.overflow-y-auto {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* Garantir que containers com min-h-0 não quebrem o scroll */
+.min-h-0 {
+  min-height: 0 !important;
+}
+
+/* Scroll suave para textarea */
+textarea {
+  resize: vertical !important;
+}
+
+textarea.resize-none {
+  resize: none !important;
+}
+
+/* SISTEMA DE ZOOM POR TELA */
+/* Aplica zoom a TODOS os tamanhos dentro de containers com --zoom-scale */
+[style*="--zoom-scale"] {
+  --zoom: var(--zoom-scale, 1);
+}
+
+/* Fazer com que elementos filhos herdem e apliquem o zoom proporcionalmente */
+[style*="--zoom-scale"] * {
+  /* Aplicar zoom a padding e margin via calc quando possível */
+  /* Os elementos que usam classes Tailwind já terão o zoom aplicado via fontSize */
+}
+
+/* Aplicar zoom específico em botões, inputs e elementos interativos */
+[style*="--zoom-scale"] button,
+[style*="--zoom-scale"] input,
+[style*="--zoom-scale"] select,
+[style*="--zoom-scale"] textarea {
+  font-size: inherit !important;
+}
+
+/* Garantir que ícones também escalem */
+[style*="--zoom-scale"] svg {
+  width: calc(1em * var(--zoom, 1));
+  height: calc(1em * var(--zoom, 1));
+}
+
+/* Aplicar zoom a elementos com altura/largura fixa em rem/em */
+[style*="--zoom-scale"] [class*="w-"],
+[style*="--zoom-scale"] [class*="h-"],
+[style*="--zoom-scale"] [class*="p-"],
+[style*="--zoom-scale"] [class*="m-"],
+[style*="--zoom-scale"] [class*="gap-"],
+[style*="--zoom-scale"] [class*="space-"] {
+  /* O Tailwind já usa rem, que escala com fontSize */
+}

@@ -1,0 +1,39 @@
+/* ============================
+ * ANTI-SCRAPING PROTECTIONS
+ * Adds friction for casual copying. Not a security layer.
+ * ============================ */
+
+/* Disable text selection on data elements */
+.protected-text,
+.standings-table,
+.match-card,
+.player-stat,
+.team-name {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Disable image dragging */
+img {
+  -webkit-user-drag: none;
+  user-drag: none;
+  pointer-events: none;
+}
+
+/* Re-enable pointer-events where interaction is needed */
+a img,
+button img,
+.clickable img,
+[role="button"] img,
+input[type="file"] + img {
+  pointer-events: auto;
+}
+
+/* DevTools open indicator — optionally blur data */
+.devtools-open .standings-table,
+.devtools-open .player-stat {
+  filter: blur(3px);
+  transition: filter 0.3s;
+}
