@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { getAdminToken } from '../lib/admin-token';
 import { supabase as supabaseRT } from '../lib/supabase-client';
-import type { RealtimeChannel } from '@supabase/supabase-js';
+type RealtimeChannel = any;
 
 const SERVER_URL = `https://${projectId}.supabase.co/functions/v1/make-server-a98fb753`;
 const DEVICE_ID = `device-${Math.random().toString(36).substr(2, 9)}-${Date.now()}`;
