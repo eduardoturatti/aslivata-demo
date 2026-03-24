@@ -65,6 +65,8 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "preview": "vite preview --port ${PORT:-4173} --host 0.0.0.0",
+    "start": "npm run preview"
   }
 }
