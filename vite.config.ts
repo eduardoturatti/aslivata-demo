@@ -55,6 +55,19 @@
     build: {
       target: 'esnext',
       outDir: 'build',
+      sourcemap: false,
+      rollupOptions: {
+        output: {
+          // Obscure chunk names so file structure isn't obvious
+          chunkFileNames: 'assets/c-[hash].js',
+          entryFileNames: 'assets/e-[hash].js',
+          assetFileNames: 'assets/a-[hash].[ext]',
+        },
+      },
+    },
+    esbuild: {
+      // Strip console.log and debugger from production builds
+      drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
     },
     server: {
       port: 3000,
