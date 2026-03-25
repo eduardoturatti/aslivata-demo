@@ -13,6 +13,48 @@ const AUTH_EXPIRY_LONG = 30 * 24 * 60 * 60 * 1000; // 30 days (remember me)
 
 const SERVER_BASE = `https://${projectId}.supabase.co/functions/v1/make-server-a98fb753`;
 
+// Rate limiting — prevent brute-force password guessing
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_DURATION = 5 * 60 * 1000; // 5 minutes
+const RATE_LIMIT_KEY = 'power_admin_rl';
+
+function getRateLimitState(): { attempts: number; lockedUntil: number } {
+  try {
+    const raw = sessionStorage.getItem(RATE_LIMIT_KEY);
+    if (!raw) return { attempts: 0, lockedUntil: 0 };
+    return JSON.parse(raw);
+  } catch { return { attempts: 0, lockedUntil: 0 }; }
+}
+
+function setRateLimitState(state: { attempts: number; lockedUntil: number }) {
+  sessionStorage.setItem(RATE_LIMIT_KEY, JSON.stringify(state));
+}
+
+function isRateLimited(): { limited: boolean; remainingSeconds: number } {
+  const state = getRateLimitState();
+  if (state.lockedUntil > Date.now()) {
+    return { limited: true, remainingSeconds: Math.ceil((state.lockedUntil - Date.now()) / 1000) };
+  }
+  // Reset if lockout expired
+  if (state.lockedUntil > 0 && state.lockedUntil <= Date.now()) {
+    setRateLimitState({ attempts: 0, lockedUntil: 0 });
+  }
+  return { limited: false, remainingSeconds: 0 };
+}
+
+function recordFailedAttempt() {
+  const state = getRateLimitState();
+  state.attempts += 1;
+  if (state.attempts >= MAX_ATTEMPTS) {
+    state.lockedUntil = Date.now() + LOCKOUT_DURATION;
+  }
+  setRateLimitState(state);
+}
+
+function resetRateLimit() {
+  sessionStorage.removeItem(RATE_LIMIT_KEY);
+}
+
 function getAuthExpiry(): number {
   return localStorage.getItem(AUTH_REMEMBER_KEY) === 'true' ? AUTH_EXPIRY_LONG : AUTH_EXPIRY_SHORT;
 }
@@ -52,6 +94,14 @@ export function AdminGate() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!password.trim()) return;
+
+    // Check rate limiting before attempting
+    const rl = isRateLimited();
+    if (rl.limited) {
+      setError(`Muitas tentativas. Aguarde ${rl.remainingSeconds}s.`);
+      return;
+    }
+
     setSubmitting(true);
     setError('');
 
@@ -68,6 +118,7 @@ export function AdminGate() {
       const data = await res.json();
 
       if (!res.ok) {
+        recordFailedAttempt();
         setError(data.error || 'Erro ao autenticar');
         setPassword('');
         setSubmitting(false);
@@ -75,19 +126,26 @@ export function AdminGate() {
       }
 
       if (data.valid) {
+        resetRateLimit();
         localStorage.setItem(AUTH_KEY, 'true');
         localStorage.setItem(AUTH_TS_KEY, String(Date.now()));
         localStorage.setItem(AUTH_REMEMBER_KEY, String(remember));
-        // Store token for protected endpoints (X-Admin-Token header)
+        // Store token in memory/sessionStorage only (not localStorage)
         setAdminToken(password);
         setAuthenticated(true);
         setError('');
       } else {
-        setError('Senha incorreta. Tente novamente.');
+        recordFailedAttempt();
+        const rlAfter = isRateLimited();
+        if (rlAfter.limited) {
+          setError(`Muitas tentativas. Bloqueado por ${Math.ceil(LOCKOUT_DURATION / 60000)} minutos.`);
+        } else {
+          const remaining = MAX_ATTEMPTS - getRateLimitState().attempts;
+          setError(`Senha incorreta. ${remaining} tentativa${remaining !== 1 ? 's' : ''} restante${remaining !== 1 ? 's' : ''}.`);
+        }
         setPassword('');
       }
     } catch (err: any) {
-      console.error('[AdminGate] Auth error:', err);
       setError('Erro de conexao. Tente novamente.');
       setPassword('');
     }

@@ -1,21 +1,25 @@
 /* ============================
- * ANTI-SCRAPING PROTECTIONS
- * Adds friction for casual copying. Not a security layer.
+ * ANTI-SCRAPING / ANTI-COPY PROTECTIONS
+ * Multiple layers of friction against casual copying.
  * ============================ */
 
-/* Disable text selection on data elements */
-.protected-text,
-.standings-table,
-.match-card,
-.player-stat,
-.team-name {
+/* ---- Global text selection disable ---- */
+body {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
 }
 
-/* Disable image dragging */
+/* Allow selection only in form inputs/textareas */
+input, textarea, [contenteditable="true"] {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* Disable image dragging globally */
 img {
   -webkit-user-drag: none;
   user-drag: none;
@@ -31,9 +35,38 @@ input[type="file"] + img {
   pointer-events: auto;
 }
 
-/* DevTools open indicator — optionally blur data */
+/* Disable print — blank page if someone tries to print */
+@media print {
+  body {
+    display: none !important;
+  }
+}
+
+/* ---- DevTools open — blur ALL sensitive data ---- */
 .devtools-open .standings-table,
-.devtools-open .player-stat {
-  filter: blur(3px);
+.devtools-open .player-stat,
+.devtools-open .match-card,
+.devtools-open .team-name,
+.devtools-open [data-protected],
+.devtools-open main {
+  filter: blur(8px) !important;
+  pointer-events: none !important;
   transition: filter 0.3s;
+}
+
+/* Watermark overlay when devtools detected */
+.devtools-open::after {
+  content: "⚠ Acesso monitorado — Conteúdo protegido por direitos autorais";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 99999;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: rgba(255, 0, 0, 0.7);
+  text-align: center;
+  pointer-events: none;
+  white-space: nowrap;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }

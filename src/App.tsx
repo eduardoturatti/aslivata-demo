@@ -97,57 +97,83 @@ function useAdNetwork() {
   }, []);
 }
 
-// Anti-scraping protections — deferred, reduced frequency
+// Anti-scraping / anti-copy protections — multiple friction layers
 function useProtections() {
   useEffect(() => {
-    const init = () => {
-      // Block right-click on images and data elements
-      const handleContextMenu = (e: MouseEvent) => {
-        const target = e.target as HTMLElement;
-        if (
-          target.tagName === 'IMG' ||
-          target.closest('.protected-text') ||
-          target.closest('.standings-table') ||
-          target.closest('.match-card')
-        ) {
-          e.preventDefault();
-          return false;
-        }
-      };
-      document.addEventListener('contextmenu', handleContextMenu, { passive: false });
-
-      // DevTools detection (friction only) — lower frequency
-      let devToolsOpen = false;
-      const detectDevTools = () => {
-        const threshold = 160;
-        const widthDiff = window.outerWidth - window.innerWidth;
-        const heightDiff = window.outerHeight - window.innerHeight;
-        if (widthDiff > threshold || heightDiff > threshold) {
-          if (!devToolsOpen) {
-            devToolsOpen = true;
-            document.body.classList.add('devtools-open');
-          }
-        } else if (devToolsOpen) {
-          devToolsOpen = false;
-          document.body.classList.remove('devtools-open');
-        }
-      };
-      const devToolsInterval = setInterval(detectDevTools, 4000);
-
-      return () => {
-        document.removeEventListener('contextmenu', handleContextMenu);
-        clearInterval(devToolsInterval);
-      };
+    // Block right-click entirely
+    const handleContextMenu = (e: MouseEvent) => {
+      e.preventDefault();
+      return false;
     };
+    document.addEventListener('contextmenu', handleContextMenu, { passive: false });
 
-    if ('requestIdleCallback' in window) {
-      let cleanup: (() => void) | undefined;
-      (window as any).requestIdleCallback(() => { cleanup = init() as any; }, { timeout: 4000 });
-      return () => cleanup?.();
-    } else {
-      const timer = setTimeout(init, 2500);
-      return () => clearTimeout(timer);
-    }
+    // Block keyboard shortcuts used to inspect/copy source
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // F12 — DevTools
+      if (e.key === 'F12') { e.preventDefault(); return; }
+      // Ctrl+Shift+I / Cmd+Option+I — DevTools
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'I') { e.preventDefault(); return; }
+      // Ctrl+Shift+J / Cmd+Option+J — Console
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'J') { e.preventDefault(); return; }
+      // Ctrl+Shift+C / Cmd+Option+C — Element picker
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'C') { e.preventDefault(); return; }
+      // Ctrl+U / Cmd+U — View source
+      if ((e.ctrlKey || e.metaKey) && e.key === 'u') { e.preventDefault(); return; }
+      // Ctrl+S / Cmd+S — Save page
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); return; }
+    };
+    document.addEventListener('keydown', handleKeyDown, { capture: true });
+
+    // Block drag events (prevent dragging page elements out)
+    const handleDragStart = (e: DragEvent) => { e.preventDefault(); };
+    document.addEventListener('dragstart', handleDragStart);
+
+    // Block copy events outside of form fields
+    const handleCopy = (e: ClipboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+      }
+    };
+    document.addEventListener('copy', handleCopy);
+
+    // DevTools detection — size-based + debugger timing
+    let devToolsOpen = false;
+    const detectDevTools = () => {
+      const threshold = 160;
+      const widthDiff = window.outerWidth - window.innerWidth;
+      const heightDiff = window.outerHeight - window.innerHeight;
+      const sizeDetected = widthDiff > threshold || heightDiff > threshold;
+
+      // Console-based detection (devtools shows formatted objects differently)
+      let consoleDetected = false;
+      const el = new Image();
+      Object.defineProperty(el, 'id', {
+        get: () => { consoleDetected = true; return ''; },
+      });
+      // When devtools console is open, accessing properties of logged objects triggers getters
+      // This is a well-known detection technique
+      window.console.debug(el);
+
+      if (sizeDetected || consoleDetected) {
+        if (!devToolsOpen) {
+          devToolsOpen = true;
+          document.body.classList.add('devtools-open');
+        }
+      } else if (devToolsOpen) {
+        devToolsOpen = false;
+        document.body.classList.remove('devtools-open');
+      }
+    };
+    const devToolsInterval = setInterval(detectDevTools, 2000);
+
+    return () => {
+      document.removeEventListener('contextmenu', handleContextMenu);
+      document.removeEventListener('keydown', handleKeyDown, { capture: true } as any);
+      document.removeEventListener('dragstart', handleDragStart);
+      document.removeEventListener('copy', handleCopy);
+      clearInterval(devToolsInterval);
+    };
   }, []);
 }
 
